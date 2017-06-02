@@ -30,19 +30,19 @@ def drawBoids():
 
     if not boidsList:
         for i in range(2):
-            randomX = -10+i*12#random() * 20
-            randomY = -10+i*5#random() * 20
+            randomX = -10 + i*15#random() * 15
+            randomY = 10 - i*15#random() * 15
             boidsList.append(Boid(i + 1, randomX, randomY))
             stepX.append(0)
             stepY.append(0)
+            print(boidsList[i])
     center = defineCenter(boidsList)
 
-    gluLookAt(0.0, 0.0, 0.0,
+    gluLookAt(0.0, 0.0, 70.0,
               center[0], center[1], center[2],
               0.0, 1.0, 0.0)
-    #desenhaEixos()
+    desenhaEixos()
     for b in boidsList:
-        glLoadIdentity()
         glTranslate(stepX[b.id-1], stepY[b.id-1], 0.0)
         b.drawBoid()
 
@@ -191,16 +191,16 @@ def animate():
 
         b.velocity[0] += v1[0] + v2[0] + v3[0]
         b.velocity[1] += v1[1] + v2[1] + v3[1]
-        if 0 <= stepX[b.id -1] < b.velocity[0]:
-            stepX[b.id -1] += 1
-        elif b.velocity[0] < stepX[b.id -1] <= 0:
-            stepX[b.id -1] -=1
-        if 0 <= stepY[b.id -1] < b.velocity[1]:
-            stepY[b.id -1] += 1
-        elif b.velocity[1] < stepY[b.id -1] <= 0:
-            stepY[b.id -1] -= 1
 
-    glutIdleFunc(animate)
+        if 0 <= stepX[b.id -1] < b.velocity[0]:
+            stepX[b.id -1] += 0.1
+        elif b.velocity[0] < stepX[b.id -1] <= 0:
+            stepX[b.id -1] -= 0.1
+        if 0 <= stepY[b.id -1] < b.velocity[1]:
+            stepY[b.id -1] += 0.1
+        elif b.velocity[1] < stepY[b.id -1] <= 0:
+            stepY[b.id -1] -= 0.1
+    glutPostRedisplay()
 
 
 if __name__ == '__main__':
