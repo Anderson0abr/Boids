@@ -188,20 +188,22 @@ def animate():
 
     for b in boidsList:
         v1 = rule1(b)
-        v2 = [0.0, 0.0] #rule2(b)
+        v2 = rule2(b)
         v3 = rule3(b)
 
         b.velocity[0] += v1[0] + v2[0] + v3[0]
         b.velocity[1] += v1[1] + v2[1] + v3[1]
 
+        hip = sqrt(b.velocity[0]**2 + b.velocity[1]**2)
         if 0 <= stepX[b.id -1] < b.velocity[0]:
-            stepX[b.id -1] += 0.1
+            stepX[b.id -1] += b.velocity[0]/(hip*15)
         elif b.velocity[0] < stepX[b.id -1] <= 0:
-            stepX[b.id -1] -= 0.1
+            stepX[b.id -1] -= b.velocity[0]/(hip*15)
         if 0 <= stepY[b.id -1] < b.velocity[1]:
-            stepY[b.id -1] += 0.1
+            stepY[b.id -1] += b.velocity[1]/(hip*15)
         elif b.velocity[1] < stepY[b.id -1] <= 0:
-            stepY[b.id -1] -= 0.1
+            stepY[b.id -1] -= b.velocity[1]/(hip*15)
+
 
     glutPostRedisplay()
 
