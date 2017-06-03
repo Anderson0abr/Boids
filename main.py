@@ -29,22 +29,24 @@ def drawBoids():
     glLoadIdentity()
 
     if not boidsList:
-        for i in range(2):
-            randomX = -10 + i*15#random() * 15
-            randomY = 10 - i*15#random() * 15
+        for i in range(10):
+            randomX = random() * 15
+            randomY = random() * 15
             boidsList.append(Boid(i + 1, randomX, randomY))
             stepX.append(0)
             stepY.append(0)
-            print(boidsList[i])
     center = defineCenter(boidsList)
 
     gluLookAt(0.0, 0.0, 70.0,
               center[0], center[1], center[2],
               0.0, 1.0, 0.0)
     desenhaEixos()
+
     for b in boidsList:
+        glPushMatrix()
         glTranslate(stepX[b.id-1], stepY[b.id-1], 0.0)
         b.drawBoid()
+        glPopMatrix()
 
     glutSwapBuffers()
 
@@ -200,6 +202,7 @@ def animate():
             stepY[b.id -1] += 0.1
         elif b.velocity[1] < stepY[b.id -1] <= 0:
             stepY[b.id -1] -= 0.1
+
     glutPostRedisplay()
 
 
