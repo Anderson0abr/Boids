@@ -29,9 +29,19 @@ def drawBoids():
     glLoadIdentity()
 
     if not boidsList:
-        for i in range(10):
-            randomX = random() * 15
-            randomY = random() * 15
+        '''x1 = 42.2005318728587
+        y1 = 38.2340315854177
+        x2 = 37.8633469082294
+        y2 = 13.039126499080922
+        x3 = 48.83288572933188
+        y3 = 40.87373027577135
+        boidsList.append(Boid(1, x1, y1))
+        boidsList.append(Boid(2, x2, y2))
+        boidsList.append(Boid(3, x3, y3))'''
+        for i in range(3):
+            randomX = random() * 50
+            randomY = random() * 50
+            print("X: {} Y: {}".format(randomX, randomY))
             boidsList.append(Boid(i + 1, randomX, randomY))
             stepX.append(0)
             stepY.append(0)
@@ -44,6 +54,8 @@ def drawBoids():
 
     for b in boidsList:
         glPushMatrix()
+        desenhaCentro(center)
+        desenhaVelocity(b) # debug
         glTranslate(stepX[b.id-1], stepY[b.id-1], 0.0)
         b.drawBoid()
         glPopMatrix()
@@ -54,22 +66,30 @@ def drawBoids():
 def defineCenter(boidsList):
     center = [0, 0, 0]
     for b in boidsList:
-        center[0] += b.position[0]
-        center[1] += b.position[1]
+        center[0] += b.position[0] + stepX[b.id-1]
+        center[1] += b.position[1] + stepY[b.id-1]
         center[2] += b.position[2]
 
     center[0] /= len(boidsList)
     center[1] /= len(boidsList)
     center[2] /= len(boidsList)
 
+    return center
+
+def desenhaCentro(center):
     glColor3d(1.0, 0.0, 0.0)
     glPointSize(4)
     glBegin(GL_POINTS)
     glVertex3d(center[0], center[1], center[2])
     glEnd()
 
-    return center
-
+# debug
+def desenhaVelocity(b):
+    glColor3d(1.0, 0.0, 0.0)
+    glBegin(GL_LINES)
+    glVertex3d(b.position[0]+stepX[b.id-1], b.position[1]+stepY[b.id-1], b.position[2])
+    glVertex3d(b.velocity[0], b.velocity[1], b.velocity[2])
+    glEnd()
 
 def desenhaEixos():
     # Desenha Eixo +Y
@@ -127,7 +147,7 @@ def initialize():
     glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(40.0, width / height, 1, 100.0)
+    gluPerspective(40.0, width / height, -100.0, 2.0)
 
 
 def createMenu():
@@ -139,12 +159,10 @@ def animate():
         '''Boids try to fly towards the centre of mass of neighbouring boids'''
         pc = [0.0, 0.0]
         for b in boidsList:
-            if b == self:
-                continue
             pc[0] += b.position[0] + stepX[b.id-1]
             pc[1] += b.position[1] + stepY[b.id-1]
-        pc[0] /= len(boidsList) - 1
-        pc[1] /= len(boidsList) - 1
+        pc[0] /= len(boidsList)
+        pc[1] /= len(boidsList)
 
         pc[0] -= self.position[0] + stepX[self.id-1]
         pc[1] -= self.position[1] + stepY[self.id-1]
@@ -157,20 +175,18 @@ def animate():
         for b in boidsList:
             if b == self:
                 continue
-            t1 = (b.position[0] - self.position[0])**2
-            t2 = (b.position[1] - self.position[1])**2
+            t1 = ((b.position[0] + stepX[b.id-1]) - (self.position[0] + stepX[self.id-1]))**2
+            t2 = ((b.position[1] + stepX[b.id-1]) - (self.position[1] + stepY[self.id-1]))**2
             distance = sqrt(t1+t2)
             if distance < 3:
-                c[0] -= self.position[0] - b.position[0]
-                c[1] -= self.position[1] - b.position[1]
+                c[0] -= (b.position[0] + stepX[b.id-1]) - (self.position[0] + stepX[self.id-1])
+                c[1] -= (b.position[1] + stepX[b.id-1]) - (self.position[1] + stepX[self.id-1])
         return c
 
     def rule3(self):
         '''Boids try to match velocity with near boids'''
         pv = [0.0, 0.0]
         for b in boidsList:
-            if b == self:
-                continue
             pv[0] += b.velocity[0]
             pv[1] += b.velocity[1]
         pv[0] /= len(boidsList) - 1
@@ -195,15 +211,14 @@ def animate():
         b.velocity[1] += v1[1] + v2[1] + v3[1]
 
         hip = sqrt(b.velocity[0]**2 + b.velocity[1]**2)
-        if 0 <= stepX[b.id -1] < b.velocity[0]:
-            stepX[b.id -1] += b.velocity[0]/(hip*15)
-        elif b.velocity[0] < stepX[b.id -1] <= 0:
-            stepX[b.id -1] -= b.velocity[0]/(hip*15)
-        if 0 <= stepY[b.id -1] < b.velocity[1]:
-            stepY[b.id -1] += b.velocity[1]/(hip*15)
-        elif b.velocity[1] < stepY[b.id -1] <= 0:
-            stepY[b.id -1] -= b.velocity[1]/(hip*15)
-
+        if 0 <= stepX[b.id - 1] < b.velocity[0]:
+            stepX[b.id - 1] += b.velocity[0] / (hip * 10)
+        elif b.velocity[0] < stepX[b.id - 1] <= 0:
+            stepX[b.id - 1] -= b.velocity[0] / (hip * 10)
+        if 0 <= stepY[b.id - 1] < b.velocity[1]:
+            stepY[b.id - 1] += b.velocity[1] / (hip * 10)
+        elif b.velocity[1] < stepY[b.id - 1] <= 0:
+            stepY[b.id - 1] -= b.velocity[1] / (hip * 10)
 
     glutPostRedisplay()
 
