@@ -6,8 +6,9 @@ from random import uniform
 class Boid:
     def __init__(self, _id, _x, _y):
         self.id = _id
-        self.position = [_x, _y, 1.0]
-        self.velocity = [0, 0, 0]
+        self.initialPosition = [_x, _y, 1.0]
+        self.position = self.initialPosition
+        self.velocity = [0.0, 0.0, 0.0]
         self.colorX = uniform(0.0, 0.8)
         self.colorY = uniform(0.0, 0.8)
         self.colorZ = uniform(0.0, 0.8)
