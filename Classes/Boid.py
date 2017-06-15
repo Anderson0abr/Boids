@@ -7,7 +7,7 @@ class Boid:
     def __init__(self, _id, _x, _y):
         self.id = _id
         self.initialPosition = [_x, _y, 1.0]
-        self.position = self.initialPosition
+        self.position = self.initialPosition[:]
         self.velocity = [0.0, 0.0, 0.0]
         self.colorX = uniform(0.0, 0.8)
         self.colorY = uniform(0.0, 0.8)
@@ -18,5 +18,5 @@ class Boid:
 
     def drawBoid(self):
         glColor3f(self.colorX, self.colorY, self.colorZ)
-        glTranslate(self.position[0], self.position[1], self.position[2])
+        glTranslate(self.initialPosition[0], self.initialPosition[1], self.initialPosition[2])
         glutWireSphere(1, 10, 10)
