@@ -12,7 +12,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 from random import random
-from math import sqrt, pow
+from math import sqrt
 
 width = height = 700
 
@@ -37,12 +37,13 @@ def drawBoids():
     glLoadIdentity()
 
     if not boidsList:
-        for i in range(50):
+        for i in range(10):
             randomX = random() * 50
             randomY = random() * 50
             boidsList.append(Boid(i + 1, randomX, randomY))
-            stepX.append(0)
-            stepY.append(0)
+            stepX.append(0.0)
+            stepY.append(0.0)
+            stepZ.append(0.0)
     center = defineCenter(boidsList)
 
     gluLookAt(center[0], (center[1] - rotateCamera), (70.0 - rotateCamera),
@@ -59,7 +60,7 @@ def drawBoids():
         glRotated(rotate, 0.0, 0.0, 1.0)
         glTranslate(-center[0], -center[1], -center[2])
 
-        glTranslate(stepX[b.id - 1], stepY[b.id - 1], 0.0)
+        glTranslate(stepX[b.id - 1], stepY[b.id - 1], stepZ[b.id-1])
         b.drawBoid()
         glPopMatrix()
 
@@ -266,8 +267,9 @@ def animate():
         b.position[2] += b.velocity[2]
         stepX[b.id - 1] = b.position[0] - b.initialPosition[0]
         stepY[b.id - 1] = b.position[1] - b.initialPosition[1]
+        stepZ[b.id - 1] = b.position[2] - b.initialPosition[2]
     if terminateFlag:
-        rotate += 1
+        rotate += 5
         if rotate > 360:
             rotate -= 360
         for b in boidsList:
@@ -282,6 +284,7 @@ if __name__ == '__main__':
     boidsList = []
     stepX = []
     stepY = []
+    stepZ = []
     rotate = 0.0
     rotateCamera = 0.0
     scale = 1.0
