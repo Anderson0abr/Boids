@@ -7,14 +7,14 @@ Desenvolvido por: Anderson Bezerra Ribeiro
 Data: 27/06/2017
 '''
 
-from Classes.Boid import Boid
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
-from OpenGL.GL import *
-from random import random
 from math import sqrt
+from random import random
 
-width = height = 700
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from Classes.Boid import Boid
 
 
 def start():
@@ -60,7 +60,7 @@ def drawBoids():
         glRotated(rotate, 0.0, 0.0, 1.0)
         glTranslate(-center[0], -center[1], -center[2])
 
-        glTranslate(stepX[b.id - 1], stepY[b.id - 1], stepZ[b.id-1])
+        glTranslate(stepX[b.id - 1], stepY[b.id - 1], stepZ[b.id - 1])
         b.drawBoid()
         glPopMatrix()
 
@@ -142,11 +142,11 @@ def keyboardEvent(key, x, y):
             rotate -= 360
         if rotateCamera < 45:
             rotateCamera += 1
-    if key == b'c':
+    elif key == b'c':
         rotateCamera = 0
-    if key == b't':
+    elif key == b't':
         terminateFlag = True
-    if key == b'r':
+    elif key == b'r':
         terminateFlag = False
         rotate = 0.0
         scale = 1.0
@@ -154,6 +154,18 @@ def keyboardEvent(key, x, y):
             b.position[0] = b.initialPosition[0]
             b.position[1] = b.initialPosition[1]
             b.position[2] = b.initialPosition[2]
+            b.velocity = [0.0, 0.0, 0.0]
+    elif key == b'n':
+        terminateFlag = False
+        rotate = 0.0
+        scale = 1.0
+        for b in boidsList:
+            randomX = random() * 50
+            randomY = random() * 50
+            b.position[0] = b.initialPosition[0] = randomX
+            b.position[1] = b.initialPosition[1] = randomY
+            b.position[2] = b.initialPosition[2] = 1.0
+            b.velocity = [0.0, 0.0, 0.0]
     glutPostRedisplay()
 
 
@@ -167,25 +179,39 @@ def initialize():
 
 def createMenu():
     def Window(option):
-        global rotate, rotateCamera, terminateFlag
+        global rotate, scale, rotateCamera, terminateFlag
         if option == 0:
             rotateCamera = 0.0
         elif option == 1:
             terminateFlag = False
             rotate = 0.0
+            scale = 1.0
             for b in boidsList:
                 b.position[0] = b.initialPosition[0]
                 b.position[1] = b.initialPosition[1]
                 b.position[2] = b.initialPosition[2]
+                b.velocity = [0.0, 0.0, 0.0]
         elif option == 2:
+            terminateFlag = False
+            rotate = 0.0
+            scale = 1.0
+            for b in boidsList:
+                randomX = random() * 50
+                randomY = random() * 50
+                b.position[0] = b.initialPosition[0] = randomX
+                b.position[1] = b.initialPosition[1] = randomY
+                b.position[2] = b.initialPosition[2] = 1.0
+                b.velocity = [0.0, 0.0, 0.0]
+        elif option == 3:
             terminateFlag = True
         glutPostRedisplay()
         return 0
 
     glutCreateMenu(Window)
-    glutAddMenuEntry("Reset Camera", 0)
-    glutAddMenuEntry("Reset Positions", 1)
-    glutAddMenuEntry("Terminate", 2)
+    glutAddMenuEntry("Reset Camera - c", 0)
+    glutAddMenuEntry("Reset Positions - r", 1)
+    glutAddMenuEntry("New Positions - n", 2)
+    glutAddMenuEntry("Terminate - t", 3)
     glutAttachMenu(GLUT_RIGHT_BUTTON)
 
 
@@ -223,7 +249,7 @@ def animate():
             t2 = (b.position[1] - self.position[1]) ** 2
             t3 = (b.position[2] - self.position[2]) ** 2
             distance = sqrt(t1 + t2 + t3)
-            if distance < 2.5:
+            if distance < 2.0:
                 c[0] -= (b.position[0] - self.position[0]) / 100
                 c[1] -= (b.position[1] - self.position[1]) / 100
                 c[2] -= (b.position[2] - self.position[2]) / 100
@@ -281,6 +307,7 @@ def animate():
 
 
 if __name__ == '__main__':
+    width = height = 700
     boidsList = []
     stepX = []
     stepY = []
