@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Algoritmo Boids
 Trabalho final da disciplina de Computação Gráfica - 2016.2
